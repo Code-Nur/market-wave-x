@@ -64,6 +64,17 @@ interface CategoryOption {
   name: string;
 }
 
+interface SellerRoleDoc {
+  role?: unknown;
+  full_name?: unknown;
+  email?: unknown;
+}
+
+interface SellerOption {
+  id: string;
+  label: string;
+}
+
 function asString(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
@@ -75,6 +86,7 @@ function asNumber(value: unknown): number {
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<CategoryOption[]>([]);
+  const [sellers, setSellers] = useState<SellerOption[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [newImageFile, setNewImageFile] = useState<File | null>(null);
@@ -159,9 +171,43 @@ export default function ProductsPage() {
     }
   };
 
+  const fetchSellers = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, "user_roles"));
+      const mapped = snapshot.docs
+        .map((item) => {
+          const data = item.data() as SellerRoleDoc;
+          if (data.role !== "seller") return null;
+
+          const fullName = asString(data.full_name);
+          const email = asString(data.email);
+          const label = fullName || email;
+          if (!label) return null;
+
+          return {
+            id: item.id,
+            label,
+          };
+        })
+        .filter((item): item is SellerOption => Boolean(item));
+
+      setSellers(mapped);
+      if (mapped.length > 0) {
+        setForm((prev) => ({
+          ...prev,
+          seller: prev.seller.trim() ? prev.seller : mapped[0].label,
+        }));
+      }
+    } catch (err) {
+      console.error("Sellerlarni yuklashda xato:", err);
+      toast.error("Sellerlarni yuklab bo'lmadi");
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
     fetchCategories();
+    fetchSellers();
   }, []);
 
   // Mahsulot qo'shish
@@ -414,11 +460,21 @@ export default function ProductsPage() {
 
               <div className="space-y-2">
                 <Label>Seller</Label>
-                <Input
-                  placeholder="TechStore UZ"
+                <Select
                   value={form.seller}
-                  onChange={(e) => setForm((prev) => ({ ...prev, seller: e.target.value }))}
-                />
+                  onValueChange={(value) => setForm((prev) => ({ ...prev, seller: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seller tanlang" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sellers.map((seller) => (
+                      <SelectItem key={seller.id} value={seller.label}>
+                        {seller.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">

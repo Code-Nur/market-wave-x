@@ -1,39 +1,29 @@
-import {
-  LayoutDashboard,
-  FolderTree,
-  Package,
-  ShoppingCart,
-  Users,
-  LogOut,
-} from "lucide-react";
-import { NavLink } from "@/components/NavLink";
+import { LayoutDashboard, LogOut, Package } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { auth } from "@/lib/firebase";
+import { toast } from "sonner";
 
 const menuItems = [
-  { title: "Bosh sahifa", url: "/admin", icon: LayoutDashboard },
-  { title: "Foydalanuvchilar", url: "/admin/users", icon: Users },
-  { title: "Kategoriyalar", url: "/admin/categories", icon: FolderTree },
-  { title: "Mahsulotlar", url: "/admin/products", icon: Package },
-  { title: "Buyurtmalar", url: "/admin/orders", icon: ShoppingCart },
+  { title: "Bosh sahifa", url: "/seller", icon: LayoutDashboard },
+  { title: "Mahsulotlar", url: "/seller/products", icon: Package },
 ];
 
-export function AdminSidebar() {
+export function SellerSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
@@ -50,10 +40,10 @@ export function AdminSidebar() {
       <SidebarHeader className="px-4 py-5">
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center">
-              <Package className="w-4 h-4 text-sidebar-primary-foreground" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary">
+              <Package className="h-4 w-4 text-sidebar-primary-foreground" />
             </div>
-            <span className="font-bold text-lg text-sidebar-foreground">E-Commerce</span>
+            <span className="text-lg font-bold text-sidebar-foreground">Seller Panel</span>
           </div>
         )}
       </SidebarHeader>
@@ -68,14 +58,14 @@ export function AdminSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={
-                      item.url === "/admin"
-                        ? location.pathname === "/admin"
+                      item.url === "/seller"
+                        ? location.pathname === "/seller"
                         : location.pathname.startsWith(item.url)
                     }
                   >
                     <NavLink
                       to={item.url}
-                      end={item.url === "/admin"}
+                      end={item.url === "/seller"}
                       className="hover:bg-sidebar-accent/50"
                       activeClassName="bg-sidebar-accent text-sidebar-primary font-medium"
                     >

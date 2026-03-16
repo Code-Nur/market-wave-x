@@ -3,14 +3,15 @@ import { Navigate, Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/AdminSidebar";
 import { AdminChangePasswordDialog } from "@/components/AdminChangePasswordDialog";
-import { useAdmin } from "@/hooks/useAdmin";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Skeleton } from "@/components/ui/skeleton";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { toast } from "sonner";
+import { getHomePathByRole } from "@/lib/roles";
 
 export default function AdminLayout() {
-  const { user, isAdmin, loading } = useAdmin();
+  const { user, role, isAdmin, loading } = useUserRole();
   const soundBlockedNoticeShownRef = useRef(false);
 
   useEffect(() => {
@@ -81,14 +82,7 @@ export default function AdminLayout() {
 
   if (!user) return <Navigate to="/login" replace />;
   if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-3">
-          <h1 className="text-3xl font-bold text-destructive">Ruxsat yo'q</h1>
-          <p className="text-muted-foreground">Sizda admin panelga kirish huquqi mavjud emas.</p>
-        </div>
-      </div>
-    );
+    return <Navigate to={getHomePathByRole(role)} replace />;
   }
 
   return (
