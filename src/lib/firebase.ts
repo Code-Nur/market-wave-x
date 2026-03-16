@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { deleteApp, getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -19,3 +19,16 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const analytics = getAnalytics(app);
+
+export function createSecondaryAuth() {
+  const appName = `secondary-auth-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const secondaryApp = initializeApp(firebaseConfig, appName);
+
+  return {
+    auth: getAuth(secondaryApp),
+    dispose: async () => {
+      const appInstance = getApps().find((item) => item.name === appName) ?? getApp(appName);
+      await deleteApp(appInstance);
+    },
+  };
+}

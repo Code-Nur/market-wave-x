@@ -9,6 +9,10 @@ import Dashboard from "./pages/admin/Dashboard";
 import CategoriesPage from "./pages/admin/CategoriesPage";
 import ProductsPage from "./pages/admin/ProductsPage";
 import OrdersPage from "./pages/admin/OrdersPage";
+import UsersPage from "./pages/admin/UsersPage";
+import SellerLayout from "./components/SellerLayout";
+import SellerDashboard from "./pages/seller/Dashboard";
+import SellerProductsPage from "./pages/seller/ProductsPage";
 import NotFound from "./pages/NotFound";
 import MyOrdersPage from "./pages/MyOrders";
 
@@ -26,10 +30,14 @@ const App = () => (
           <Route path="/my-orders" element={<MyOrdersPage />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
-            <Route path="users" element={<Navigate to="/admin" replace />} />
+            <Route path="users" element={<UsersPage />} />
             <Route path="categories" element={<CategoriesPage />} />
             <Route path="products" element={<ProductsPage />} />
             <Route path="orders" element={<OrdersPage />} />
+          </Route>
+          <Route path="/seller" element={<SellerLayout />}>
+            <Route index element={<SellerDashboard />} />
+            <Route path="products" element={<SellerProductsPage />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

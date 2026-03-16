@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ShieldCheck } from "lucide-react";
+import { getHomePathByRole, normalizeRole } from "@/lib/roles";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
@@ -52,16 +53,9 @@ export default function Login() {
       const docRef = doc(db, "user_roles", user.uid);
       const docSnap = await getDoc(docRef);
 
-      if (!docSnap.exists() || docSnap.data().role !== "admin") {
-        toast.error("Sizda admin huquqi yo'q!");
-        await auth.signOut();
-        setLoading(false);
-        return;
-      }
-
-      // 3️⃣ Muvaffaqiyatli login
       toast.success("Muvaffaqiyatli kirdingiz!");
-      navigate("/admin");
+      const role = normalizeRole(docSnap.data()?.role);
+      navigate(getHomePathByRole(role));
     } catch (error: unknown) {
       console.error(error);
       toast.error("Kirish xatosi: " + getErrorMessage(error));
@@ -78,10 +72,10 @@ export default function Login() {
             <ShieldCheck className="w-7 h-7 text-primary-foreground" />
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">
-            Admin Panel
+            Tizimga kirish
           </CardTitle>
           <CardDescription className="text-muted-foreground">
-            Tizimga kirish uchun ma'lumotlaringizni kiriting
+            Admin, sotuvchi yoki user sifatida tizimga kiring
           </CardDescription>
         </CardHeader>
         <CardContent>
